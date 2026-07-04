@@ -1,35 +1,7 @@
-name: Build evo-crm
-
 on:
   workflow_dispatch:
-
-permissions:
-  contents: read
-  packages: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: ./evo-ai-crm-community
-          file: ./evo-ai-crm-community/docker/Dockerfile
-          push: true
-          build-args: |
-            BUNDLE_WITHOUT=
-            RAILS_ENV=development
-            RAILS_SERVE_STATIC_FILES=false
-          tags: ghcr.io/${{ github.repository_owner }}/evo-crm:latest
+    inputs:
+      server_ip:
+        description: 'IP público do VPS'
+        required: true
+        default: '201.76.43.6'
