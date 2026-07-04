@@ -3,10 +3,14 @@ name: Build evo-frontend
 on:
   workflow_dispatch:
     inputs:
-      vite_api_url:
-        description: 'URL da API (VITE_API_URL)'
-        required: false
-        default: 'http://localhost:3000'
+      server_ip:
+        description: 'IP público do VPS'
+        required: true
+        default: '201.76.43.6'
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
@@ -30,5 +34,8 @@ jobs:
           file: ./evo-ai-frontend-community/Dockerfile
           push: true
           build-args: |
-            VITE_API_URL=${{ github.event.inputs.vite_api_url }}
+            VITE_API_URL=http://${{ github.event.inputs.server_ip }}:3000
+            VITE_AUTH_API_URL=http://${{ github.event.inputs.server_ip }}:3001
+            VITE_EVOAI_API_URL=http://${{ github.event.inputs.server_ip }}:5555
+            VITE_AGENT_PROCESSOR_URL=http://${{ github.event.inputs.server_ip }}:8000
           tags: ghcr.io/${{ github.repository_owner }}/evo-frontend:latest
