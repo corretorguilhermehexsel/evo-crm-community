@@ -1,3 +1,5 @@
+name: Build evo-frontend
+
 on:
   workflow_dispatch:
     inputs:
@@ -5,3 +7,35 @@ on:
         description: 'IP público do VPS'
         required: true
         default: '201.76.43.6'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./evo-ai-frontend-community
+          file: ./evo-ai-frontend-community/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_URL=http://${{ github.event.inputs.server_ip }}:3000
+            VITE_AUTH_API_URL=http://${{ github.event.inputs.server_ip }}:3001
+            VITE_EVOAI_API_URL=http://${{ github.event.inputs.server_ip }}:5555
+            VITE_AGENT_PROCESSOR_URL=http://${{ github.event.inputs.server_ip }}:8000
+          tags: ghcr.io/${{ github.repository_owner }}/evo-frontend:latest
