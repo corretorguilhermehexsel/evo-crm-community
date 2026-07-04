@@ -1,12 +1,7 @@
-name: Build evo-frontend
+name: Build evo-crm
 
 on:
   workflow_dispatch:
-    inputs:
-      server_ip:
-        description: 'IP público do VPS'
-        required: true
-        default: '201.76.43.6'
 
 permissions:
   contents: read
@@ -30,12 +25,11 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./evo-ai-frontend-community
-          file: ./evo-ai-frontend-community/Dockerfile
+          context: ./evo-ai-crm-community
+          file: ./evo-ai-crm-community/docker/Dockerfile
           push: true
           build-args: |
-            VITE_API_URL=http://${{ github.event.inputs.server_ip }}:3000
-            VITE_AUTH_API_URL=http://${{ github.event.inputs.server_ip }}:3001
-            VITE_EVOAI_API_URL=http://${{ github.event.inputs.server_ip }}:5555
-            VITE_AGENT_PROCESSOR_URL=http://${{ github.event.inputs.server_ip }}:8000
-          tags: ghcr.io/${{ github.repository_owner }}/evo-frontend:latest
+            BUNDLE_WITHOUT=
+            RAILS_ENV=development
+            RAILS_SERVE_STATIC_FILES=false
+          tags: ghcr.io/${{ github.repository_owner }}/evo-crm:latest
